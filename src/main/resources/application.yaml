@@ -1,10 +1,39 @@
 spring:
   application:
     name: BookLibrary
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: http://localhost:9000
 
   datasource:
     driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/book-library
     username: postgres
     password: postgres
-    url: jdbc:postgresql://localhost:5432/book-library
 
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: postgresql
+
+    properties:
+      hibernate:
+        format_sql: true
+        debug: false
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        orm:
+          jdbc:
+            bind: trace
+      type:
+        descriptor:
+          sql: trace
+server:
+  port: 8081

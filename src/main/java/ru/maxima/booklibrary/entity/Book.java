@@ -1,30 +1,43 @@
 package ru.maxima.booklibrary.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/*
+ * Сущность Книги
+ *
+ * @author Sindicat
+ */
 @Entity
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "books")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String author;
-    private String annotation;
     private Integer yearOfPublication;
+    private String annotation;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime removedAt;
-    private String createdPerson;
-    private String updatedPerson;
-    private String removedPerson;
+    private String createdUser;
+    private String updatedUser;
+    private String removedUser;
+    private Integer howManyCopies;
+    private Integer copiesAvailable;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
 }
