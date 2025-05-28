@@ -39,13 +39,4 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Book> books;
 
-//    @ElementCollection
-//    @CollectionTable(name = "books",
-//            schema = "user_service",
-//            joinColumns = @JoinColumn(name = "books"))
-//    private List<Book> books;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
 }
