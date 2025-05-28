@@ -33,9 +33,7 @@ public class BookController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Long id) {
-        Book book = bookService.getBookById(id)
-                .orElseThrow(() -> new RuntimeException("Книга не найдена"));
-        return ResponseEntity.ok(book);
+        return ResponseEntity.ok(bookService.getBookById(id));
     }
 
     //    @PreAuthorize("hasRole('ROLE_ADMIN')")

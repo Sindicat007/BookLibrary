@@ -53,57 +53,68 @@ public class BookService {
 
     @Transactional
     public void deleteBookById(Long id) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new BookNotFoundException(id));
+        Book book = findBookById(id);
         book.setRemovedAt(UserUtils.getCurrentTime());
         book.setRemovedUser(UserUtils.getCurrentUsername());
         bookRepository.deleteById(id);
     }
 
     @Transactional
-    public Optional<Book> getBookById(Long id) {
-        return Optional.ofNullable(bookRepository.findById(id)
-                .orElseThrow(() -> new BookNotFoundException(id)));
+    public Book getBookById(Long id) {
+        return findBookById(id);
     }
 
     @Transactional
     public void assignBookToCurrentUser(Long id) {
         String username = UserUtils.getCurrentUsername();
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new BookNotFoundException(id));
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь с username " + username + " не найден"));
+        Book book = findBookById(id);
+        User user = findByUsername(username);
 
         if (book.getUser() != null) {
-            throw new IllegalArgumentException("Книга уже принадлежит пользователю " + book.getUser().getUsername());
+            throw new IllegalArgumentException("Книга уже принадлежит пользователю " +
+                    book.getUser().getUsername());
         }
 
-        book.setUser(user);
+        changeCopiesAvailable(book, user);
         bookRepository.save(book);
     }
 
     @Transactional
     public void updateBook(Long id, Book book) {
-        if (bookRepository.existsById(id)) {
-            book.setUpdatedAt(UserUtils.getCurrentTime());
-            book.setUpdatedUser(UserUtils.getCurrentUsername());
-            book.setId(id);
-            bookRepository.save(book);
-        } else {
-            throw new BookNotFoundException(id);
-        }
+        findBookById(id);
+        book.setUpdatedAt(UserUtils.getCurrentTime());
+        book.setUpdatedUser(UserUtils.getCurrentUsername());
+        book.setId(id);
+        bookRepository.save(book);
     }
 
     @Transactional
     public String getBookCover(Long id) {
-        if (bookRepository.existsById(id)) {
-            Book book = bookRepository.findById(id)
-                    .orElseThrow(() -> new BookNotFoundException(id));
-            return String.format("%s %s %d",
-                    book.getAuthor(), book.getName(), book.getYearOfPublication());
+        Book book = findBookById(id);
+        return String.format("%s %s %d",
+                book.getAuthor(),
+                book.getName(),
+                book.getYearOfPublication());
+
+    }
+
+    private Book findBookById(Long id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException(id));
+    }
+
+    private User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь с username " + username + " не найден"));
+    }
+
+    private Book changeCopiesAvailable(Book book, User user) {
+        if (book.getCopiesAvailable() > 0) {
+            book.setCopiesAvailable(book.getCopiesAvailable() - 1);
+            book.setUser(user);
+            return book;
         } else {
-            throw new BookNotFoundException(id);
+            throw new IllegalArgumentException("Книга недоступна для выдачи");
         }
     }
 }
