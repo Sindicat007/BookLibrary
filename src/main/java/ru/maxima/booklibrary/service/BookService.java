@@ -30,7 +30,7 @@ public class BookService {
     public void addBook(Book book) {
         Optional<Book> existingBook = bookRepository.findByName(book.getName());
         if (existingBook.isPresent()) {
-            throw new RuntimeException("Книга с названием '" + book.getName() + "' уже существует");
+            throw new IllegalArgumentException("Книга с названием '" + book.getName() + "' уже существует");
         }
 
         book.setCreatedUser(UserUtils.getCurrentUsername());
@@ -46,7 +46,7 @@ public class BookService {
     @Transactional
     public List<Book> getBooksByUser(Long userId) {
         if (userId == null) {
-            throw new RuntimeException("Не указан id пользователя");
+            throw new IllegalArgumentException("Не указан id пользователя");
         }
         return bookRepository.findByUserId(userId);
     }
@@ -76,7 +76,7 @@ public class BookService {
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь с username " + username + " не найден"));
 
         if (book.getUser() != null) {
-            throw new RuntimeException("Книга уже принадлежит пользователю " + book.getUser().getUsername());
+            throw new IllegalArgumentException("Книга уже принадлежит пользователю " + book.getUser().getUsername());
         }
 
         book.setUser(user);

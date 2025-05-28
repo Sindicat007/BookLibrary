@@ -39,7 +39,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             return userRepository.save(user);
         } else {
-            throw new RuntimeException("Пользователь с таким именем уже существует.");
+            throw new IllegalArgumentException("Пользователь с таким именем уже существует.");
         }
     }
 

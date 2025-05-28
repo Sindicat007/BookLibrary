@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @RestController
 public class GlobalExceptionHandler extends RuntimeException {
+
+
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException e) {
@@ -24,7 +26,4 @@ public class GlobalExceptionHandler extends RuntimeException {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    public GlobalExceptionHandler(String message) {
-        super(message);
-    }
 }
