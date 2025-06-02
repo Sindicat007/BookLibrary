@@ -1,16 +1,19 @@
 package ru.maxima.booklibrary.service;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.maxima.booklibrary.config.UserUtils;
+import ru.maxima.booklibrary.config.Utils;
 import ru.maxima.booklibrary.entity.Book;
 import ru.maxima.booklibrary.entity.User;
 import ru.maxima.booklibrary.exception.BookNotFoundException;
 import ru.maxima.booklibrary.repository.BookRepository;
 import ru.maxima.booklibrary.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +36,8 @@ public class BookService {
             throw new IllegalArgumentException("Книга с названием '" + book.getName() + "' уже существует");
         }
 
-        book.setCreatedUser(UserUtils.getCurrentUsername());
-        book.setCreatedAt(UserUtils.getCurrentTime());
+        book.setCreatedUser(Utils.getCurrentUsername());
+        book.setCreatedAt(getCurrentTime());
         bookRepository.save(book);
     }
 
@@ -44,18 +47,13 @@ public class BookService {
     }
 
     @Transactional
-    public List<Book> getBooksByUser(Long userId) {
-        if (userId == null) {
-            throw new IllegalArgumentException("Не указан id пользователя");
-        }
+    public List<Book> getBooksByUser(@NotNull Long userId) {
         return bookRepository.findByUserId(userId);
     }
 
     @Transactional
     public void deleteBookById(Long id) {
         Book book = findBookById(id);
-        book.setRemovedAt(UserUtils.getCurrentTime());
-        book.setRemovedUser(UserUtils.getCurrentUsername());
         bookRepository.deleteById(id);
     }
 
@@ -66,7 +64,7 @@ public class BookService {
 
     @Transactional
     public void assignBookToCurrentUser(Long id) {
-        String username = UserUtils.getCurrentUsername();
+        String username = Utils.getCurrentUsername();
         Book book = findBookById(id);
         User user = findByUsername(username);
 
@@ -81,18 +79,18 @@ public class BookService {
 
     @Transactional
     public void updateBook(Long id, Book book) {
-        findBookById(id);
-        book.setUpdatedAt(UserUtils.getCurrentTime());
-        book.setUpdatedUser(UserUtils.getCurrentUsername());
-        book.setId(id);
-        bookRepository.save(book);
+        Book updateBook = findBookById(id);
+        BeanUtils.copyProperties(book, updateBook, Utils.getNullPropertyNames(book));
+        updateBook.setUpdatedAt(getCurrentTime());
+        updateBook.setUpdatedUser(Utils.getCurrentUsername());
+        bookRepository.save(updateBook);
     }
 
     @Transactional
     public String getBookCover(Long id) {
         Book book = findBookById(id);
         return String.format("%s %s %d",
-                book.getAuthor(),
+                book.getAuthorId(),
                 book.getName(),
                 book.getYearOfPublication());
 
@@ -116,5 +114,9 @@ public class BookService {
         } else {
             throw new IllegalArgumentException("Книга недоступна для выдачи");
         }
+    }
+
+    public static LocalDateTime getCurrentTime() {
+        return LocalDateTime.now();
     }
 }

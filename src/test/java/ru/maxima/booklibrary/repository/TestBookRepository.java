@@ -13,6 +13,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/*
+ * Тестирование репозитория для работы с книгами
+ *
+ * @author Sindicat
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("Тестирование репозитория для работы с пользователями")
 @Import(PostgresDbTestcontainers.class)
@@ -48,12 +53,4 @@ class TestBookRepository {
         assertEquals("Book 2", book.getName());
     }
 
-//    @Test
-//    @DisplayName("Удаление книги по id")
-//    void shouldDeleteById() {
-//        bookRepository.deleteById(1L);
-//
-//        Book book = bookRepository.findById(1L).orElse(null);
-//        assertThat(book).isNull();
-//    }
 }

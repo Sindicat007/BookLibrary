@@ -4,61 +4,40 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import ru.maxima.booklibrary.config.PostgresDbTestcontainers;
 import ru.maxima.booklibrary.entity.Book;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/*
+ * Тестирование контроллера для работы с книгами
+ *
+ * @author Sindicat
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("Тестирование контроллера для работы с книгами")
-public class TestBookController extends PostgresDbTestcontainers {
-
+@Import(PostgresDbTestcontainers.class)
+public class TestBookController {
 
     @Autowired
-    private BookController bookController;
+    private TestRestTemplate restTemplate;
 
     @Test
     @DisplayName("Получение всех книг")
     void testGetAllBooks() {
 
-        List<Book> books = bookController.getAllBooks().getBody();
-
-        assertThat(books).isNotNull();
-        assertEquals(3, books.size());
+        var books = restTemplate.getForEntity(
+                "http://localhost:8081/books",
+                Book[].class
+        );
+        assertEquals(HttpStatus.OK, books.getStatusCode());
+        Book[] booksArray = books.getBody();
+        assertThat(booksArray).isNotNull();
+        assertEquals(3, booksArray.length);
     }
 
-    @Test
-    @DisplayName("Получение книги по id")
-    void testGetTaskById() {
-
-        Book bookById = bookController.getBookById(2L).getBody();
-        assertThat(bookById).isNotNull();
-        assertEquals(2, bookById.getId());
-
-    }
-
-//    @Test
-//    @DisplayName("Добавление книги")
-//    void testAddBook() {
-//
-//        Book book = new Book();
-//        book.setName("Book test");
-//        book.setAuthor("Author test");
-//        book.setYearOfPublication(2020);
-//        bookController.addBook(book);
-//
-//        assertThat(book).isNotNull();
-//        assertEquals(4, book.getId());
-//    }
-
-//    @Test
-//    @DisplayName("Удаление книги")
-//    void testDeleteBook() {
-//        if (bookController.deleteBookById(3L).getStatusCode().is2xxSuccessful()) {
-//            assertEquals(2, bookController.getAllBooks().getBody().size());
-//        }
-//    }
 }

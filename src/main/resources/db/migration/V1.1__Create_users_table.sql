@@ -8,7 +8,7 @@ CREATE TABLE users (
     roles VARCHAR(255),
     created_at TIMESTAMP,
     removed_at TIMESTAMP,
-    created_user VARCHAR(255),
-    removed_user VARCHAR(255),
+    created_user bigint REFERENCES users(id),
+    removed_user bigint REFERENCES users(id),
     CONSTRAINT pk_user PRIMARY KEY (id)
 );

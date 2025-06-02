@@ -30,7 +30,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody User user) {
-        userService.getUser(user);
-        return ResponseEntity.ok(user);
+        User userLogin = userService.getUser(user).get();
+        return ResponseEntity.ok(userLogin);
     }
 }

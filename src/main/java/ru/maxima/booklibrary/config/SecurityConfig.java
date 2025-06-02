@@ -28,7 +28,6 @@ public class SecurityConfig {
         return new MyUserDetailsService();
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -36,6 +35,9 @@ public class SecurityConfig {
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/register/**").permitAll()
                         .anyRequest().authenticated())
+                .logout(logout -> logout.logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .permitAll())
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
                 .oauth2ResourceServer((oAuth2 -> oAuth2.jwt(Customizer.withDefaults())));
         return http.build();

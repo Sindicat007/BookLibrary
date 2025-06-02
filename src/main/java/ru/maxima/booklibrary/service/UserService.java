@@ -35,8 +35,12 @@ public class UserService {
 
     @Transactional
     public User createUser(User user) {
-        if (userRepository.findByUsername(user.getUsername()).isEmpty()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if (userRepository
+                .findByUsername(user.getUsername())
+                .isEmpty()) {
+            user.setPassword(passwordEncoder
+                    .encode(user.getPassword()));
             return userRepository.save(user);
         } else {
             throw new IllegalArgumentException("Пользователь с таким именем уже существует.");
@@ -45,10 +49,9 @@ public class UserService {
 
     @Transactional
     public Optional<User> getUser(User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            return userRepository.findByUsername(user.getUsername());
-        } else {
-            throw new UsernameNotFoundException("Пользователь с таким именем не существует.");
-        }
+        return Optional.ofNullable(userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь с таким именем не существует.")));
     }
+
 }
+

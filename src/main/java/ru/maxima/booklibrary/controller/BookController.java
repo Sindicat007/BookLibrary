@@ -48,7 +48,7 @@ public class BookController {
     public ResponseEntity<String> assignBookToCurrentUser(@PathVariable("id") Long bookId) {
         log.info("Запрос на передачу книги с ID {} текущему пользователю", bookId);
         bookService.assignBookToCurrentUser(bookId);
-        return ResponseEntity.ok("Книга успешно передана текущему пользователю");
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")

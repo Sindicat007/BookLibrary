@@ -33,8 +33,8 @@ public class User {
     private String roles;
     private LocalDateTime createdAt;
     private LocalDateTime removedAt;
-    private String createdUser;
-    private String removedUser;
+    private Long createdUser;
+    private Long removedUser;
 
     @OneToMany(mappedBy = "user")
     private List<Book> books;
