@@ -1,34 +1,42 @@
 package ru.maxima.booklibrary.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+/*
+ * Сущность Пользователя
+ *
+ * @author Sindicat
+ */
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Person {
+@Table(name = "users")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String username;
     private Integer age;
     private String email;
     private String phoneNumber;
     private String password;
-    private String role;
+    private String roles;
     private LocalDateTime createdAt;
     private LocalDateTime removedAt;
-    private String createdPerson;
-    private String removedPerson;
+    private Long createdUser;
+    private Long removedUser;
+
+    @OneToMany(mappedBy = "user")
+    private List<Book> books;
+
 }
