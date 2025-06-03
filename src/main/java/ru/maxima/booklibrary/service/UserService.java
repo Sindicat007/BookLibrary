@@ -10,7 +10,6 @@ import ru.maxima.booklibrary.repository.BookRepository;
 import ru.maxima.booklibrary.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 /*
  * Сервис для работы с пользователями
@@ -35,22 +34,18 @@ public class UserService {
 
     @Transactional
     public User createUser(User user) {
-
-        if (userRepository
-                .findByUsername(user.getUsername())
-                .isEmpty()) {
-            user.setPassword(passwordEncoder
-                    .encode(user.getPassword()));
-            return userRepository.save(user);
-        } else {
+        if (userRepository.existsByUsername(user.getUsername())) {
             throw new IllegalArgumentException("Пользователь с таким именем уже существует.");
         }
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+        return userRepository.save(user);
     }
 
     @Transactional
-    public Optional<User> getUser(User user) {
-        return Optional.ofNullable(userRepository.findByUsername(user.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь с таким именем не существует.")));
+    public User getUser(User user) {
+        return userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь с таким именем не существует."));
     }
 
 }
