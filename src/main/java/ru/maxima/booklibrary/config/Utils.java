@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /*
- * Получение текущего пользователя и текущего времени
+ * Получение текущего пользователя
  *
  * @author Sindicat
  */
